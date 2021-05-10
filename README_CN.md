@@ -1,16 +1,20 @@
 # NN-Practical Face Recognition 
 
 
-## Task introduction
+## 任务介绍
 
 ![image.png](https://i.loli.net/2021/01/22/QFXWYLZi4OKuS1U.png)
 
-##  Implementation and Application
+## 实现及使用 implementation and application
 ![image-20210122171709829.png](https://i.loli.net/2021/01/23/MOfje69ZDkh5HqJ.png)
+
+![image.png](https://i.loli.net/2021/01/23/rEWZBN82R6kOwxA.png)
+
+
 
 ### How to use
 
-1. requirements: pytorch>=1.7 torchvision>=0.8.1  tqdm>=4.56
+1. requirements: pytorch>=1.7 torchvision>=0.8.1   
 
 2. git clone https://git.scc.kit.edu/ukwet/nn_facerecognition.git
 
@@ -20,33 +24,39 @@
 
    running `python Which_celebrity_you_look_most_similar_to.py`
 
-   Enter the **absolute path** of an `jpg` picture. It will show which celebrity you look most similar to.
+   Enter the **absolute path** of the picture. It will show which celebrity you look most similar to.
 
    
 
 ![image.png](https://i.loli.net/2021/01/23/kXZ9ezlm5ypKr6a.png)   
-## 0 Image Augmentation：Custom transforms
 
-### 1. Use Face Crop
-+ Dataset images
+
+
+## 0 Image Augmentation 理论：自定义 transforms：
+
+### 1. 使用 Face Crop
++ 原始数据集图片
 
   ![image.png](https://i.loli.net/2020/12/29/784gYCOVLsvBDdZ.png)   
 
-+ Use `face_crop` transform —— `face_crop.py`
++ 使用 `face_crop` transform —— `face_crop.py`
 
   ![image.png](https://i.loli.net/2020/12/29/8Muh1OmHig7kFYw.png)
 
-### 2. Use Sample pairing
+### 2. 使用 Sample pairing
 
-+ After using `face_crop` then using `Sample pairing` transform
++ 在使用 `face_crop` 之后再使用 `Sample pairing` transform 可以实现如下的效果：
 
   ![image.png](https://i.loli.net/2020/12/29/EPJMZtRIypo7ik2.png)
 
-  Note: Sample pairing is inserted into the training intermittently to enhance the data, instead of using it in `transform` when reading the data
+  注：Sample pairing间歇性的插入到训练的中，对数据做增强，而不是在读取数据时在`transform`中使用
 
 
 
-## 1. Data preparation
+## 1. 实验数据准备
+
++ 手动的将完整的数据集按照比例8：2分割训练集和验证集，将分割后的数据集放入路径 `./data/` 因此得到训练集路径`./data/lfw_train` 和验证集路径 `./data/lfw_train`
+
 
 Read data：
 
@@ -57,8 +67,8 @@ from torchvision import datasets,transforms
 from face_crop import face_crop
 
 
-train_dir = './data/face_data/train'
-valid_dir = './data/face_data/val'
+train_dir = r'D:\Jupyterlab_workspace\nn_facerecognition\lfw\lfw_train'
+valid_dir = r'D:\Jupyterlab_workspace\nn_facerecognition\lfw\lfw_val'
 
 mean = [0.485, 0.456, 0.406]
 std  = [0.229, 0.224, 0.225]
@@ -97,12 +107,12 @@ valid_loader = torch.utils.data.DataLoader(valid_data, batch_size=64,
 
 
 
-## 2.  Project model
+## 2.  项目模型
 
-Transfer learning based on **Backbone**: resnet50:
+基于 **Backbone**: resnet50 的迁移学习:
 
-- [x] Model 1: Resnet50 feature extraction + 2-layer fully connected layer classifier
-- [x] Model 2: Resnet50 feature extraction + 1-layer fully connected layer classifier
+- [x] 模型1：resnet50 特征提取 + 2层全连接层分类器
+- [x] 模型2：resnet50 特征提取 + 1层全连接层分类器
 
 ```python
 # Resnet50 with One fully connected layers
@@ -125,11 +135,11 @@ model_resnet50.fc = classifier
 
 
 
-## 3. Training process
+## 3. 训练过程
 
-Make 5 training process: check the corresponding `.pynb` file for the specific process
+进行了5组训练过程：具体的过程查看对应的 `.pynb` 文件
 
-**Training process 1**: Resnet50 feature extraction  + 2-layer fully connected layer classifier
+**训练过程1**：resnet50 特征提取 + 2层全连接层分类器
 
 + Loss function：`NLLLoss`
 
@@ -139,7 +149,7 @@ Make 5 training process: check the corresponding `.pynb` file for the specific p
 
 
 
-**Training process 2**: Resnet50 feature extraction + 1-layer fully connected layer classifier
+**模型过程2**：resnet50 特征提取 + 1层全连接层分类器
 
 + Loss function：`NLLLoss`
 
@@ -147,7 +157,7 @@ Make 5 training process: check the corresponding `.pynb` file for the specific p
 
 + epoch： `50`
 
-**Training process 3**: Resnet50 feature extraction + 1-layer fully connected layer classifier
+**训练过程3**：resnet50 特征提取 + 1层全连接层分类器
 
 + Loss function：`Focal loss`
 
@@ -157,7 +167,7 @@ Make 5 training process: check the corresponding `.pynb` file for the specific p
 
 
 
-**Training process 4**: Resnet50 feature extraction + 1-layer fully connected layer classifier
+**模型过程4**：resnet50 特征提取 + 1层全连接层分类器
 
 + Loss function：``NLLLoss``
 
@@ -165,7 +175,7 @@ Make 5 training process: check the corresponding `.pynb` file for the specific p
 
 + epoch： `100`
 
-**Training process 5**: Resnet50 feature extraction + 1-layer fully connected layer classifier
+**模型过程5**：resnet50 特征提取 + 1层全连接层分类器
 
 - Loss function：``NLLLoss``
 
@@ -289,18 +299,18 @@ def train(model='resnet50', data_augumentation=False, loss='NLLLoss', lr=0.003, 
             valid_loss_min = valid_loss
 ```
 
-### Save Model
+### 模型保存
 
-+ Save the model when the validation set loss is the smallest. Our model is saved in the path `./model`
-+ The training loss and verification loss of the training process are saved in the corresponding path `./results/Training{}`
++ 在验证集损失最小的时候保存模型，我们的模型保存在路径 `./model`
++ 训练过程的训练损失和验证损失保存在对应的路径 `./results/`
 
-An example of train and valid loss：
+一个损失的例子：
 
 ![image.png](https://i.loli.net/2021/01/23/mlNwbcaIO3ZA1FU.png)
 
 
 
-## 4. Model accuracy test
+## 4. 模型精度测试
 check the corresponding `Test Accuracy.pynb` file for the specific process   
 all_model_test_accuracy：
 1. model 1: 66.9333%
